@@ -13,6 +13,8 @@ import {
 import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 
+
+
 const products = [
   {
     id: 1,
@@ -118,6 +120,63 @@ export default function Home() {
       (prev) => (prev - 1 + heroImages.length) % heroImages.length
     );
   };
+
+
+  const [products, setProducts] = useState([]);
+
+useEffect(() => {
+  fetch("http://localhost:5000/api/products")
+    .then((res) => res.json())
+    .then((data) => {
+      setProducts(data.products || []);
+    })
+    .catch((error) => {
+      console.error("Failed to fetch products:", error);
+    });
+}, []);
+
+
+
+
+const [homeClients, setHomeClients] = useState([]);
+
+useEffect(() => {
+  const fetchHomeClients = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/clients"
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to fetch clients"
+        );
+      }
+
+      const clientsForHome = (data.clients || []).filter(
+        (client) =>
+          client.status === "published" &&
+          Number(client.show_on_homepage) === 1
+      );
+
+      setHomeClients(clientsForHome);
+
+    } catch (error) {
+      console.error("Homepage clients error:", error);
+    }
+  };
+
+  fetchHomeClients();
+}, []);
+
+
+
+
+
+
+
 
   return (
     <main className="bg-white">
@@ -322,53 +381,54 @@ export default function Home() {
       {/* =====================================================
           PRODUCTS
       ====================================================== */}
-      <section className="bg-white py-24">
+        <section className="bg-white py-24">
 
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+  <div className="mx-auto max-w-7xl px-6 lg:px-8">
 
-          <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+    <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
 
-            <div className="max-w-2xl">
+      <div className="max-w-2xl">
 
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
-                Our Products
-              </p>
+        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
+          Our Products
+        </p>
 
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                Medical products built for dependable performance
-              </h2>
+        <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+          Medical products built for dependable performance
+        </h2>
 
-              <p className="mt-4 text-lg leading-8 text-slate-600">
-                Explore our range of surgical and medical products
-                designed for healthcare applications.
-              </p>
+        <p className="mt-4 text-lg leading-8 text-slate-600">
+          Explore our range of surgical and medical products
+          designed for healthcare applications.
+        </p>
 
-            </div>
+      </div>
 
-            <a
-              href="/products"
-              className="inline-flex items-center font-semibold text-blue-600 transition hover:text-blue-700"
-            >
-              View all products
-              <ArrowRight size={17} className="ml-2" />
-            </a>
+      <a
+        href="/products"
+        className="inline-flex items-center font-semibold text-blue-600 transition hover:text-blue-700"
+      >
+        View all products
+        <ArrowRight size={17} className="ml-2" />
+      </a>
 
-          </div>
+    </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-              />
-            ))}
+      {products.slice(0, 3).map((product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+        />
+      ))}
 
-          </div>
+    </div>
 
-        </div>
+  </div>
 
-      </section>
+</section>
+
 
 
       {/* =====================================================
@@ -432,7 +492,70 @@ export default function Home() {
       {/* =====================================================
           CLIENTS
       ====================================================== */}
-      <section className="bg-white py-24">
+
+
+      <section className="bg-slate-50 py-24">
+  <div className="mx-auto max-w-7xl px-6 lg:px-8">
+
+    <div className="mx-auto max-w-2xl text-center">
+      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
+        Our Clients
+      </p>
+
+      <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+        Trusted by healthcare organizations
+      </h2>
+
+      <p className="mt-4 text-lg leading-8 text-slate-600">
+        We work with healthcare organizations and medical industry
+        partners across different applications.
+      </p>
+    </div>
+
+    {homeClients.length > 0 && (
+      <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+        {homeClients.map((client) => (
+          <div
+            key={client.id}
+            className="group flex h-44 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+
+            {client.logo_url ? (
+              <img
+                src={client.logo_url}
+                alt={client.name}
+                className="max-h-24 max-w-full object-contain transition duration-300 group-hover:scale-105"
+              />
+            ) : (
+              <div className="text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 font-bold text-blue-600">
+                  {client.name
+                    ?.slice(0, 2)
+                    .toUpperCase()}
+                </div>
+
+                <p className="mt-3 text-sm font-semibold text-slate-700">
+                  {client.name}
+                </p>
+              </div>
+            )}
+
+          </div>
+        ))}
+
+      </div>
+    )}
+
+    {homeClients.length === 0 && (
+      <div className="mt-12 text-center text-sm text-slate-500">
+        No featured clients available.
+      </div>
+    )}
+
+  </div>
+</section>z
+      {/* <section className="bg-white py-24">
 
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
 
@@ -481,7 +604,7 @@ export default function Home() {
 
         </div>
 
-      </section>
+      </section> */}
 
 
       {/* =====================================================
