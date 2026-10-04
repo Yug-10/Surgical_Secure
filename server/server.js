@@ -4,6 +4,7 @@ import "dotenv/config";
 
 import publiproductRoutes from "./routes/publicproductsRoutes.js";
 import inquiryRoutes from "./routes/inquiryRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 
 import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -187,91 +188,7 @@ app.listen(PORT, () => {
   );
 });
 
-// import express from "express";
-// import cors from "cors";
-// import "dotenv/config";
 
-// import publiproductRoutes from "./routes/publicproductsRoutes.js";
-// import authMiddleware from "./middleware/authMiddleware.js";
 
-// import pool from "./config/db.js";
-// import inquiryRoutes from "./routes/inquiryRoutes.js";
-// import productRoutes from "./routes/productRoutes.js";
-// import adminRoutes from "./routes/adminRoutes.js";
-// import clientRoutes from "./routes/clientRoutes.js";
-// import certificationRoutes from "./routes/certificationRoutes.js";
-
-// const app = express();
-
-// const PORT = process.env.PORT || 5000;
-
-// /* -------------------------
-//    Middleware
-// ------------------------- */
-
-// app.use(
-//   cors({
-//     origin: "http://localhost:5173",
-//   }),
-// );
-
-// app.use(express.json());
-
-// app.use(express.urlencoded({ extended: true }));
-
-// /* -------------------------
-//    Root
-// ------------------------- */
-
-// app.get("/", (req, res) => {
-//   res.json({
-//     message: "Surgical Secure API is running",
-//   });
-// });
-
-// /* -------------------------
-//    Database Test
-// ------------------------- */
-
-// app.get("/api/test-db", async (req, res) => {
-//   try {
-//     const [rows] = await pool.query("SELECT 1 AS result");
-
-//     res.json({
-//       success: true,
-//       message: "MySQL connection successful",
-//       data: rows,
-//     });
-//   } catch (error) {
-//     console.error("MySQL connection error:", error);
-
-//     res.status(500).json({
-//       success: false,
-//       message: "MySQL connection failed",
-//       error: error.message,
-//     });
-//   }
-// });
-
-// /* -------------------------
-//    Existing Inquiry API   ------------------------- */
-
-// app.use("/api/admin/products", publiproductRoutes);
-
-// app.use("/api/admin/inquiries", inquiryRoutes);
-
-// app.use("/api/admin", adminRoutes);
-
-// app.use("/api/admin/clients", clientRoutes);
-
-// app.use("/api/admin/certifications", certificationRoutes);
-
-// app.use("/api/admin/products", authMiddleware, productRoutes);
-
-// /* -------------------------
-//    Start Server
-// ------------------------- */
-
-// app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
-// });
+//Contact form route
+app.use("/api/contact", contactRoutes);

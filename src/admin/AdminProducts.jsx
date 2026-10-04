@@ -47,10 +47,17 @@ function AdminProducts() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      setError("");
+      setError("");   
+
+      const token = localStorage.getItem("adminToken");
 
       const response = await fetch(
-        "http://localhost:5000/api/products"
+        "http://localhost:5000/api/admin/products",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       const data = await response.json();
@@ -62,7 +69,6 @@ function AdminProducts() {
       }
 
       setProducts(data.products || []);
-
     } catch (err) {
       console.error("Products error:", err);
       setError(err.message);
@@ -174,13 +180,30 @@ function AdminProducts() {
         ? "PUT"
         : "POST";
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      // const response = await fetch(url, {
+      //   method,
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(formData),
+      // });
+
+      const token = localStorage.getItem("adminToken");
+
+if (!token) {
+  throw new Error("Admin session expired. Please login again.");
+}
+
+const response = await fetch(url, {
+  method,
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify(formData),
+});
+
+
 
       const data = await response.json();
 
@@ -228,12 +251,28 @@ function AdminProducts() {
       setError("");
       setMessage("");
 
-      const response = await fetch(
-        `http://localhost:5000/api/admin/products/${product.id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      // const response = await fetch(
+      //   `http://localhost:5000/api/admin/products/${product.id}`,
+      //   {
+      //     method: "DELETE",
+      //   }
+      // );
+
+      const token = localStorage.getItem("adminToken");
+
+if (!token) {
+  throw new Error("Admin session expired. Please login again.");
+}
+
+const response = await fetch(
+  `http://localhost:5000/api/admin/products/${product.id}`,
+  {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
       const data = await response.json();
 
@@ -1036,4 +1075,3 @@ function AdminProducts() {
 }
 
 export default AdminProducts;
-
