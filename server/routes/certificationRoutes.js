@@ -1,8 +1,11 @@
 import express from "express";
 import pool from "../config/db.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import {
+  uploadCertificationPdf,
+} from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
-
 /*
 |--------------------------------------------------------------------------
 | PUBLIC - GET PUBLISHED CERTIFICATIONS
@@ -118,7 +121,53 @@ router.get("/admin/all", async (req, res) => {
   }
 });
 
+/*
+====================================================
+UPLOAD CERTIFICATION PDF
+POST /api/admin/certifications/upload-pdf
+====================================================
+*/
 
+router.post(
+  "/upload-pdf",
+  authMiddleware,
+  uploadCertificationPdf.single("pdf"),
+  (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "No PDF certificate uploaded",
+        });
+      }
+
+      const pdfUrl =
+        `/uploads/certifications/${req.file.filename}`;
+
+      console.log(
+        "Certification PDF uploaded:",
+        pdfUrl
+      );
+
+      res.status(201).json({
+        success: true,
+        message: "Certificate PDF uploaded successfully",
+        pdf_url: pdfUrl,
+      });
+
+    } catch (error) {
+      console.error(
+        "Certificate PDF upload error:",
+        error
+      );
+
+      res.status(500).json({
+        success: false,
+        message: "Failed to upload certificate PDF",
+      });
+    }
+  }
+);
 /*
 |--------------------------------------------------------------------------
 | ADMIN - ADD CERTIFICATION

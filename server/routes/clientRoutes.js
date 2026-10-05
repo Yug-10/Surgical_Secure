@@ -1,5 +1,7 @@
 import express from "express";
 import pool from "../config/db.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import { uploadClientLogo } from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
@@ -16,6 +18,7 @@ const router = express.Router();
 */
 
 router.get("/", async (req, res) => {
+
   try {
     const [clients] = await pool.query(`
       SELECT
@@ -41,6 +44,50 @@ router.get("/", async (req, res) => {
 
   } catch (error) {
     console.error("Get clients error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch clients",
+    });
+  }
+});
+
+
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN - GET ALL CLIENTS
+|--------------------------------------------------------------------------
+|
+| Includes published AND draft clients.
+|
+*/
+
+router.get("/admin/all", async (req, res) => {
+  try {
+    const [clients] = await pool.query(`
+      SELECT
+        id,
+        name,
+        slug,
+        logo_url,
+        website,
+        description,
+        status,
+        show_on_homepage,
+        created_at,
+        updated_at
+      FROM clients
+      ORDER BY created_at DESC
+    `);
+
+    res.json({
+      success: true,
+      clients,
+    });
+
+  } catch (error) {
+    console.error("Admin get clients error:", error);
 
     res.status(500).json({
       success: false,
@@ -106,48 +153,6 @@ router.get("/:slug", async (req, res) => {
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN - GET ALL CLIENTS
-|--------------------------------------------------------------------------
-|
-| Includes published AND draft clients.
-|
-*/
-
-router.get("/admin/all", async (req, res) => {
-  try {
-    const [clients] = await pool.query(`
-      SELECT
-        id,
-        name,
-        slug,
-        logo_url,
-        website,
-        description,
-        status,
-        show_on_homepage,
-        created_at,
-        updated_at
-      FROM clients
-      ORDER BY created_at DESC
-    `);
-
-    res.json({
-      success: true,
-      clients,
-    });
-
-  } catch (error) {
-    console.error("Admin get clients error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch clients",
-    });
-  }
-});
-
 
 /*
 |--------------------------------------------------------------------------
@@ -162,6 +167,64 @@ router.get("/admin/all", async (req, res) => {
 |
 */
 
+
+
+/*
+====================================================
+UPLOAD CLIENT LOGO
+POST /api/admin/clients/upload-logo
+====================================================
+*/
+
+router.post(
+  "/upload-logo",
+  authMiddleware,
+  uploadClientLogo.single("logo"),
+  (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "No logo uploaded",
+        });
+      }
+
+      const logoUrl =
+        `/uploads/clients/${req.file.filename}`;
+
+      console.log("Client logo uploaded:", logoUrl);
+
+      res.status(201).json({
+        success: true,
+        message: "Client logo uploaded successfully",
+        logo_url: logoUrl,
+      });
+
+    } catch (error) {
+      console.error(
+        "Client logo upload error:",
+        error
+      );
+
+      res.status(500).json({
+        success: false,
+        message: "Failed to upload client logo",
+      });
+    }
+  }
+);
+/*
+|--------------------------------------------------------------------------
+| ADMIN - ADD CLIENT
+|--------------------------------------------------------------------------
+|
+| Published:
+|   show_on_homepage = 1
+|
+| Draft:
+|   show_on_homepage = 0
+|
+*/
 router.post("/admin", async (req, res) => {
   try {
     const {

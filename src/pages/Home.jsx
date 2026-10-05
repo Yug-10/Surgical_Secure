@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
+import getImageUrl from "../utils/imageUrl";
 
 const products = [
   {
@@ -437,7 +438,7 @@ export default function Home() {
                   >
                     {client.logo_url ? (
                       <img
-                        src={client.logo_url}
+                        src={getImageUrl(client.logo_url)}
                         alt={client.name}
                         className="max-h-24 max-w-full object-contain transition duration-300 group-hover:scale-105"
                       />
