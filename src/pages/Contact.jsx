@@ -785,7 +785,7 @@ function Contact() {
                     href="tel:+910000000000"
                     className="mt-1 block text-slate-600 hover:text-blue-600"
                   >
-                    +91 00000 00000
+                    +91 90542 12419
                   </a>
 
                 </div>
@@ -806,7 +806,8 @@ function Contact() {
                   </p>
 
                   <p className="mt-1 text-slate-600">
-                    Your company address
+                    Ambica industrial estate, F25/24,<br></br>
+                    Mmco Rd,Ahmedabad, Gujarat 3823
                     <br />
                     Gujarat, India
                   </p>
