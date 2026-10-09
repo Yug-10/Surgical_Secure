@@ -411,59 +411,73 @@ export default function Home() {
           CLIENTS
       ====================================================== */}
 
-      <section className="bg-slate-50 py-6">
+      <section className="clients-section">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
-              Our Clients
-            </p>
+          {/* Section heading */}
+          <div className="clients-heading">
+            <span className="clients-eyebrow">
+              <span className="clients-eyebrow-dot" />
+              ----OUR CLIENTS----
+            </span>
 
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Trusted by healthcare organizations
-            </h2>
+            <h2>Trusted by healthcare organizations.</h2>
 
-            <p className="mt-4 text-lg leading-8 text-slate-600">
+            <p>
               We work with healthcare organizations and medical industry
               partners across different applications.
             </p>
           </div>
 
-          {homeClients.length > 0 && (
-            <div className="mt-14 overflow-x-auto pb-4 scrollbar-hide">
-              <div className="flex min-w-max items-center gap-6">
-                {homeClients.map((client) => (
+          {homeClients.length > 0 ? (
+            <div className="clients-marquee">
+              <div className="clients-marquee-track">
+                {[0, 1].map((group) => (
                   <div
-                    key={client.id}
-                    className="group flex h-44 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                    key={group}
+                    className="clients-marquee-group"
+                    aria-hidden={group === 1 ? "true" : undefined}
                   >
-                    {client.logo_url ? (
-                      <img
-                        src={getImageUrl(client.logo_url)}
-                        alt={client.name}
-                        className="max-h-24 max-w-full object-contain transition duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="text-center">
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 font-bold text-blue-600">
-                          {client.name?.slice(0, 2).toUpperCase()}
+                    {homeClients.map((client) => (
+                      <div
+                        key={`${group}-${client.id}`}
+                        className="client-premium-card"
+                        title={client.name}
+                      >
+                        <div className="client-logo-frame">
+                          {client.logo_url ? (
+                            <img
+                              src={getImageUrl(client.logo_url)}
+                              alt={group === 0 ? client.name : ""}
+                              className="client-premium-logo"
+                            />
+                          ) : (
+                            <div className="client-initials">
+                              {client.name?.slice(0, 2).toUpperCase()}
+                            </div>
+                          )}
                         </div>
 
-                        <p className="mt-2 text-sm font-semibold text-slate-700">
-                          {client.name}
-                        </p>
+                        <div className="client-card-caption">
+                          <span className="client-caption-line" />
+                          <span className="client-name">{client.name}</span>
+                        </div>
                       </div>
-                    )}
+                    ))}
                   </div>
                 ))}
               </div>
             </div>
+          ) : (
+            <p className="clients-empty">
+              Our client partners will be featured here soon.
+            </p>
           )}
 
-          {homeClients.length === 0 && (
-            <div className="mt-12 text-center text-sm text-slate-500">
-              No featured clients available.
-            </div>
-          )}
+          <div className="clients-footer">
+            <span className="clients-footer-line" />
+            <span>BUILT ON TRUST · UNITED BY CARE</span>
+            <span className="clients-footer-line" />
+          </div>
         </div>
       </section>
 
